@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import {
-  ArrowLeft,
   Lock,
   Wallet,
   CreditCard,
@@ -13,18 +12,15 @@ import {
   Loader2,
   Shield,
   Copy,
-  ExternalLink,
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { DurianLogo } from "@/components/durian-logo";
-import { QRCode } from "@/components/qr-code";
-import { formatTHB, formatUSDC, thbToUsdc, shortenAddress, sleep } from "@/lib/utils";
-import { mockPrimusVerification, generateVerificationBadge } from "@/lib/primus";
+import { formatTHB, thbToUsdc, shortenAddress } from "@/lib/utils";
+import { mockPrimusVerification } from "@/lib/primus";
 import { USDC_ADDRESS, ERC20_ABI, USDC_DECIMALS } from "@/lib/privy-config";
 import { parseUnits, encodeFunctionData } from "viem";
 
@@ -37,11 +33,11 @@ interface PaymentDetails {
   walletAddress: string;
 }
 
-export default function PaymentPage() {
+function PaymentContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { authenticated, login, user } = usePrivy();
+  const { authenticated, login } = usePrivy();
   const { wallets } = useWallets();
 
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
@@ -49,7 +45,6 @@ export default function PaymentPage() {
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "verifying" | "processing" | "success" | "error">("pending");
   const [verificationProof, setVerificationProof] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const embeddedWallet = wallets.find((w) => w.walletClientType === "privy");
@@ -70,12 +65,6 @@ export default function PaymentPage() {
       walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
     });
   }, [searchParams]);
-
-  const copyAddress = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   // Handle USDC payment
   const handleUSDCPayment = async () => {
@@ -109,7 +98,7 @@ export default function PaymentPage() {
       });
 
       // Send transaction
-      const txHash = await provider.request({
+      const hash = await provider.request({
         method: "eth_sendTransaction",
         params: [
           {
@@ -120,7 +109,7 @@ export default function PaymentPage() {
         ],
       });
 
-      setTxHash(txHash as string);
+      setTxHash(hash as string);
       setPaymentStatus("success");
     } catch (err) {
       console.error("Payment error:", err);
@@ -163,22 +152,22 @@ export default function PaymentPage() {
   if (!paymentDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#2D3A2D]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-durian-gradient">
+    <div className="min-h-screen bg-gradient-to-br from-[#A8C2B9] to-[#FDFBF7]">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-xl">
+      <header className="border-b bg-[#FDFBF7]/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <DurianLogo className="w-8 h-8" />
-              <span className="font-serif text-xl font-semibold">Durian</span>
+              <span className="font-serif text-xl font-semibold text-[#1A1C1A]">Durian</span>
             </Link>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-[#5C6B5C]">
               <Lock className="w-4 h-4" />
               SECURE CHECKOUT
             </div>
@@ -191,55 +180,65 @@ export default function PaymentPage() {
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Payment Summary */}
             <div>
-              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+              <p className="text-xs uppercase tracking-wider text-[#5C6B5C] mb-2">
                 PAYMENT SUMMARY
               </p>
-              <h1 className="text-4xl font-serif mb-2">
+              <h1 className="text-4xl font-serif mb-2 text-[#1A1C1A]">
                 Review your{" "}
-                <span className="text-gradient italic">acquisition.</span>
+                <span 
+                  className="italic"
+                  style={{
+                    background: "linear-gradient(135deg, #C5A35E 0%, #8a6b3c 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  acquisition.
+                </span>
               </h1>
 
-              <Card className="mt-6">
+              <Card className="mt-6 bg-white border-[#A8C2B9]/30">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-sage-100 flex items-center justify-center">
-                        <Wallet className="w-5 h-5 text-sage-700" />
+                      <div className="w-10 h-10 rounded-lg bg-[#A8C2B9]/20 flex items-center justify-center">
+                        <Wallet className="w-5 h-5 text-[#2D3A2D]" />
                       </div>
                       <div>
-                        <p className="font-medium">Payment to</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-medium text-[#1A1C1A]">Payment to</p>
+                        <p className="text-sm text-[#5C6B5C]">
                           {paymentDetails.businessName}
                         </p>
                       </div>
                     </div>
-                    <p className="font-serif text-xl">
+                    <p className="font-serif text-xl text-[#1A1C1A]">
                       USDC {paymentDetails.amountUsdc.toFixed(2)}
                     </p>
                   </div>
 
-                  <Separator className="my-4" />
+                  <Separator className="my-4 bg-[#A8C2B9]/30" />
 
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Platform Fee</span>
-                      <span>USDC 0.00</span>
+                      <span className="text-[#5C6B5C]">Platform Fee</span>
+                      <span className="text-[#1A1C1A]">USDC 0.00</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Network Gas</span>
-                      <span>Calculated at sign</span>
+                      <span className="text-[#5C6B5C]">Network Gas</span>
+                      <span className="text-[#1A1C1A]">Calculated at sign</span>
                     </div>
                   </div>
 
-                  <Separator className="my-4" />
+                  <Separator className="my-4 bg-[#A8C2B9]/30" />
 
                   <div className="flex justify-between items-end">
-                    <span className="font-medium">TOTAL DUE</span>
+                    <span className="font-medium text-[#1A1C1A]">TOTAL DUE</span>
                     <div className="text-right">
-                      <p className="font-serif text-2xl font-semibold">
+                      <p className="font-serif text-2xl font-semibold text-[#1A1C1A]">
                         USDC {paymentDetails.amountUsdc.toFixed(2)}
                       </p>
-                      <p className="text-sm text-primary">
+                      <p className="text-sm text-[#C5A35E]">
                         = {formatTHB(paymentDetails.amountThb)}
                       </p>
                     </div>
@@ -247,8 +246,8 @@ export default function PaymentPage() {
                 </CardContent>
               </Card>
 
-              <div className="mt-4 flex items-start gap-3 text-sm text-muted-foreground">
-                <Shield className="w-5 h-5 shrink-0 text-sage-600" />
+              <div className="mt-4 flex items-start gap-3 text-sm text-[#5C6B5C]">
+                <Shield className="w-5 h-5 shrink-0 text-[#2D3A2D]" />
                 <div>
                   <p>Funds are settled via regulated Thai digital asset protocols.</p>
                   <p>Your transaction is protected by institutional-grade encryption.</p>
@@ -257,17 +256,17 @@ export default function PaymentPage() {
             </div>
 
             {/* Payment Gateway */}
-            <Card className="bg-sage-900 text-white overflow-hidden">
+            <Card className="bg-[#2D3A2D] text-white overflow-hidden border-0">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-sage-300 mb-1">
+                    <p className="text-xs uppercase tracking-wider text-[#A8C2B9] mb-1">
                       SECURE GATEWAY
                     </p>
                     <h2 className="text-2xl font-serif italic">Finalize Payment</h2>
                   </div>
-                  <div className="w-10 h-10 rounded-lg bg-sage-800 flex items-center justify-center">
-                    <DurianLogo className="w-6 h-6 text-sage-400" />
+                  <div className="w-10 h-10 rounded-lg bg-[#3d473d] flex items-center justify-center">
+                    <DurianLogo className="w-6 h-6" />
                   </div>
                 </div>
               </CardHeader>
@@ -279,20 +278,20 @@ export default function PaymentPage() {
                       <CheckCircle2 className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-semibold mb-2">Payment Successful!</h3>
-                    <p className="text-sage-300 mb-4">
+                    <p className="text-[#A8C2B9] mb-4">
                       {paymentMethod === "usdc"
                         ? "Your USDC has been sent"
                         : "Payment verified by Primus zkTLS"}
                     </p>
                     {txHash && (
-                      <div className="bg-sage-800 rounded-lg p-3 mb-4">
-                        <p className="text-xs text-sage-400 mb-1">Transaction Hash</p>
+                      <div className="bg-[#3d473d] rounded-lg p-3 mb-4">
+                        <p className="text-xs text-[#A8C2B9] mb-1">Transaction Hash</p>
                         <p className="font-mono text-sm break-all">{txHash}</p>
                       </div>
                     )}
                     {verificationProof && (
-                      <div className="bg-sage-800 rounded-lg p-3 mb-4">
-                        <p className="text-xs text-sage-400 mb-1">Verification Proof</p>
+                      <div className="bg-[#3d473d] rounded-lg p-3 mb-4">
+                        <p className="text-xs text-[#A8C2B9] mb-1">Verification Proof</p>
                         <p className="font-mono text-sm">{verificationProof}</p>
                       </div>
                     )}
@@ -306,13 +305,13 @@ export default function PaymentPage() {
                   </div>
                 ) : paymentStatus === "processing" || paymentStatus === "verifying" ? (
                   <div className="text-center py-8">
-                    <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-gold-400" />
+                    <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-[#C5A35E]" />
                     <h3 className="text-xl font-semibold mb-2">
                       {paymentStatus === "verifying"
                         ? "Verifying Payment..."
                         : "Processing Payment..."}
                     </h3>
-                    <p className="text-sage-300">
+                    <p className="text-[#A8C2B9]">
                       {paymentStatus === "verifying"
                         ? "Primus zkTLS is verifying your payment"
                         : "Please confirm the transaction in your wallet"}
@@ -321,7 +320,7 @@ export default function PaymentPage() {
                 ) : (
                   <>
                     <div>
-                      <p className="text-xs uppercase tracking-wider text-sage-300 mb-3">
+                      <p className="text-xs uppercase tracking-wider text-[#A8C2B9] mb-3">
                         SELECT SOURCE
                       </p>
                       <div className="space-y-3">
@@ -329,17 +328,17 @@ export default function PaymentPage() {
                           onClick={() => setPaymentMethod("usdc")}
                           className={`w-full flex items-center justify-between p-4 rounded-xl transition-all ${
                             paymentMethod === "usdc"
-                              ? "bg-sage-700 border border-sage-500"
-                              : "bg-sage-800 hover:bg-sage-700"
+                              ? "bg-[#3d473d] border border-[#A8C2B9]/50"
+                              : "bg-[#3d473d]/50 hover:bg-[#3d473d]"
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-sage-600 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-lg bg-[#2D3A2D] flex items-center justify-center">
                               <Wallet className="w-5 h-5" />
                             </div>
                             <div className="text-left">
                               <p className="font-medium">Connected Wallet</p>
-                              <p className="text-xs text-sage-400">
+                              <p className="text-xs text-[#A8C2B9]">
                                 {embeddedWallet
                                   ? shortenAddress(embeddedWallet.address)
                                   : "Connect wallet to pay"}
@@ -349,8 +348,8 @@ export default function PaymentPage() {
                           <div
                             className={`w-5 h-5 rounded-full border-2 ${
                               paymentMethod === "usdc"
-                                ? "border-gold-400 bg-gold-400"
-                                : "border-sage-500"
+                                ? "border-[#C5A35E] bg-[#C5A35E]"
+                                : "border-[#A8C2B9]/50"
                             }`}
                           />
                         </button>
@@ -359,17 +358,17 @@ export default function PaymentPage() {
                           onClick={() => setPaymentMethod("revolut")}
                           className={`w-full flex items-center justify-between p-4 rounded-xl transition-all ${
                             paymentMethod === "revolut"
-                              ? "bg-sage-700 border border-sage-500"
-                              : "bg-sage-800 hover:bg-sage-700"
+                              ? "bg-[#3d473d] border border-[#A8C2B9]/50"
+                              : "bg-[#3d473d]/50 hover:bg-[#3d473d]"
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-sage-600 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-lg bg-[#2D3A2D] flex items-center justify-center">
                               <CreditCard className="w-5 h-5" />
                             </div>
                             <div className="text-left">
                               <p className="font-medium">Revolut Payment</p>
-                              <p className="text-xs text-sage-400">
+                              <p className="text-xs text-[#A8C2B9]">
                                 Verified by Primus zkTLS
                               </p>
                             </div>
@@ -377,8 +376,8 @@ export default function PaymentPage() {
                           <div
                             className={`w-5 h-5 rounded-full border-2 ${
                               paymentMethod === "revolut"
-                                ? "border-gold-400 bg-gold-400"
-                                : "border-sage-500"
+                                ? "border-[#C5A35E] bg-[#C5A35E]"
+                                : "border-[#A8C2B9]/50"
                             }`}
                           />
                         </button>
@@ -386,15 +385,15 @@ export default function PaymentPage() {
                     </div>
 
                     {paymentMethod === "usdc" && (
-                      <div className="bg-sage-800 rounded-xl p-4">
-                        <p className="text-xs uppercase tracking-wider text-sage-300 mb-2">
+                      <div className="bg-[#3d473d] rounded-xl p-4">
+                        <p className="text-xs uppercase tracking-wider text-[#A8C2B9] mb-2">
                           OFF-RAMP PATHWAY
                         </p>
-                        <div className="flex items-center gap-2">
-                          <span>USDC (Polygon)</span>
-                          <ArrowRight className="w-4 h-4 text-gold-400" />
-                          <span className="text-gold-400">Thai Baht (PromptPay)</span>
-                          <Badge className="bg-green-500/20 text-green-400 ml-auto">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span>USDC (Base)</span>
+                          <ArrowRight className="w-4 h-4 text-[#C5A35E]" />
+                          <span className="text-[#C5A35E]">Thai Baht (PromptPay)</span>
+                          <Badge className="bg-green-500/20 text-green-400 ml-auto text-xs">
                             OPTIMIZED
                           </Badge>
                         </div>
@@ -413,20 +412,20 @@ export default function PaymentPage() {
                           ? handleUSDCPayment
                           : handleRevolutPayment
                       }
-                      className="w-full h-14 text-lg bg-gold-500 hover:bg-gold-600 text-sage-900"
+                      className="w-full h-14 text-lg bg-[#C5A35E] hover:bg-[#a8864a] text-[#1A1C1A] font-semibold rounded-full"
                     >
                       AUTHORIZE PAYMENT
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
 
                     <div className="flex justify-center gap-4">
-                      <Badge variant="outline" className="border-sage-600 text-sage-300">
+                      <Badge variant="outline" className="border-[#A8C2B9]/50 text-[#A8C2B9]">
                         VISA
                       </Badge>
-                      <Badge variant="outline" className="border-sage-600 text-sage-300">
+                      <Badge variant="outline" className="border-[#A8C2B9]/50 text-[#A8C2B9]">
                         USDC
                       </Badge>
-                      <Badge variant="outline" className="border-sage-600 text-sage-300">
+                      <Badge variant="outline" className="border-[#A8C2B9]/50 text-[#A8C2B9]">
                         PROMPTPAY
                       </Badge>
                     </div>
@@ -439,19 +438,19 @@ export default function PaymentPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-background/80 backdrop-blur-xl mt-auto">
+      <footer className="border-t bg-[#FDFBF7]/80 backdrop-blur-xl mt-auto">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center justify-between text-sm text-[#5C6B5C]">
             <div className="flex items-center gap-2">
               <DurianLogo className="w-5 h-5" />
               <span className="italic">Durian Pay (Thailand)</span>
             </div>
             <p>© 2024 LICENSED DIGITAL ASSET PROVIDER. KINGDOM OF THAILAND.</p>
             <div className="flex items-center gap-4">
-              <Link href="#" className="hover:text-foreground">
+              <Link href="#" className="hover:text-[#1A1C1A]">
                 SUPPORT
               </Link>
-              <Link href="/legal" className="hover:text-foreground">
+              <Link href="/legal" className="hover:text-[#1A1C1A]">
                 PRIVACY
               </Link>
             </div>
@@ -459,5 +458,19 @@ export default function PaymentPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#A8C2B9] to-[#FDFBF7]">
+          <Loader2 className="w-12 h-12 animate-spin text-[#2D3A2D]" />
+        </div>
+      }
+    >
+      <PaymentContent />
+    </Suspense>
   );
 }

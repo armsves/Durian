@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-export default function NewPaymentPage() {
+function NewPaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -16,11 +17,26 @@ export default function NewPaymentPage() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-durian-gradient">
-      <div className="text-center">
-        <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-sage-700" />
-        <p className="text-muted-foreground">Creating payment...</p>
-      </div>
+    <div className="text-center">
+      <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-[#2D3A2D]" />
+      <p className="text-[#5C6B5C]">Creating payment...</p>
+    </div>
+  );
+}
+
+export default function NewPaymentPage() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#A8C2B9] to-[#FDFBF7]">
+      <Suspense
+        fallback={
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-[#2D3A2D]" />
+            <p className="text-[#5C6B5C]">Loading...</p>
+          </div>
+        }
+      >
+        <NewPaymentContent />
+      </Suspense>
     </div>
   );
 }
