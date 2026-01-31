@@ -132,22 +132,22 @@
 
 body {
   background-color: #FDFBF7;
-  color: #1A1C1A;
+  color: #000;
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
 .dark body {
   background-color: #2D3A2D;
-  color: #FDFBF7;
+  color: #fff;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
-  color: #1A1C1A;
+  color: #000;
 }
 
 .dark h1, .dark h2, .dark h3, .dark h4 {
-  color: #FDFBF7;
+  color: #fff;
 }
 
 /* Durian gradient - Soft Leaf to Cream */

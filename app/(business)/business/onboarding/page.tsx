@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { DurianLogo } from "@/components/durian-logo";
 import { LocationPicker } from "@/components/mapbox-map";
+import { ImageUpload } from "@/components/image-upload";
 import { CATEGORY_LABELS } from "@/lib/utils";
 import { useAppStore } from "@/lib/store";
 
@@ -62,6 +63,7 @@ export default function OnboardingPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
     { name: "", category: "", price: "", description: "" },
   ]);
+  const [logoUrl, setLogoUrl] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountName, setAccountName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -143,16 +145,12 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <Label>Logo</Label>
-              <div className="mt-1 border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary transition-colors cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Click to upload or drag and drop
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  PNG, JPG up to 2MB
-                </p>
-              </div>
+              <Label>Business Logo / Photo</Label>
+              <ImageUpload
+                onUploadComplete={(url) => setLogoUrl(url)}
+                currentImage={logoUrl}
+                className="mt-2"
+              />
             </div>
           </div>
         );

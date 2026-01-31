@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePrivy } from "@privy-io/react-auth";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -65,8 +64,6 @@ const howItWorks = [
 ];
 
 export default function LandingPage() {
-  const { login } = usePrivy();
-
   return (
     <div className="min-h-screen bg-[#FDFBF7]">
       <Header />
@@ -158,13 +155,15 @@ export default function LandingPage() {
                   </p>
 
                   <Button
-                    onClick={login}
                     className="w-full bg-[#C5A35E] hover:bg-[#a8864a] text-white font-semibold rounded-full h-12 mb-4"
                     size="lg"
+                    asChild
                   >
-                    <Wallet className="w-4 h-4 mr-2" />
-                    Sign in with Privy
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <Link href="/login">
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Get Started
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
                   </Button>
 
                   <div className="relative my-4">
@@ -343,11 +342,11 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
-                onClick={login}
                 className="bg-[#C5A35E] hover:bg-[#a8864a] text-white font-semibold rounded-full px-8"
                 size="lg"
+                asChild
               >
-                GET ONBOARDED
+                <Link href="/login">GET ONBOARDED</Link>
               </Button>
               <Button
                 variant="outline"

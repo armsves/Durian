@@ -31,15 +31,32 @@ export function formatUSD(amount: number): string {
   }).format(amount);
 }
 
-// Convert THB to USDC (approximate rate)
-const THB_TO_USD_RATE = 0.028; // ~35 THB = 1 USD
+// Exchange rate functions - use sync versions for client-side
+// For live rates, use the exchange-rate.ts module directly
+import { 
+  thbToUsdcSync, 
+  usdcToThbSync, 
+  getExchangeRate,
+  calculateOfframpAmountSync,
+  formatExchangeRate,
+  getOfframpCommission,
+} from "./exchange-rate";
 
+// Re-export for convenience
+export { 
+  getExchangeRate, 
+  calculateOfframpAmountSync, 
+  formatExchangeRate,
+  getOfframpCommission,
+};
+
+// Sync versions for client-side use (uses cached rate)
 export function thbToUsdc(thb: number): number {
-  return Number((thb * THB_TO_USD_RATE).toFixed(6));
+  return thbToUsdcSync(thb);
 }
 
 export function usdcToThb(usdc: number): number {
-  return Number((usdc / THB_TO_USD_RATE).toFixed(2));
+  return usdcToThbSync(usdc);
 }
 
 // Shorten wallet address
@@ -91,11 +108,12 @@ export function isValidThaiPhone(phone: string): boolean {
 export const CATEGORY_LABELS: Record<string, string> = {
   cafe: "Cafe",
   restaurant: "Restaurant",
-  spa: "Spa & Wellness",
-  hotel: "Hotel",
-  shop: "Shop",
-  tour: "Tour & Activity",
+  wellness: "Spa & Wellness",
+  accommodation: "Accommodation",
+  retail: "Shop & Retail",
+  tours: "Tours & Activities",
   coworking: "Coworking",
+  bar: "Bar & Nightlife",
   other: "Other",
 };
 
@@ -103,11 +121,12 @@ export const CATEGORY_LABELS: Record<string, string> = {
 export const CATEGORY_ICONS: Record<string, string> = {
   cafe: "Coffee",
   restaurant: "UtensilsCrossed",
-  spa: "Sparkles",
-  hotel: "Building2",
-  shop: "ShoppingBag",
-  tour: "MapPin",
+  wellness: "Sparkles",
+  accommodation: "Building2",
+  retail: "ShoppingBag",
+  tours: "MapPin",
   coworking: "Laptop",
+  bar: "Wine",
   other: "Store",
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { QRCodeSVG } from "react-qr-code";
+import QRCodeLib from "react-qr-code";
 import { cn } from "@/lib/utils";
 
 interface QRCodeProps {
@@ -9,7 +9,7 @@ interface QRCodeProps {
   className?: string;
   bgColor?: string;
   fgColor?: string;
-  includeMargin?: boolean;
+  businessName?: string;
 }
 
 export function QRCode({
@@ -18,7 +18,6 @@ export function QRCode({
   className,
   bgColor = "#ffffff",
   fgColor = "#1a1a1a",
-  includeMargin = true,
 }: QRCodeProps) {
   return (
     <div
@@ -27,12 +26,11 @@ export function QRCode({
         className
       )}
     >
-      <QRCodeSVG
+      <QRCodeLib
         value={value}
         size={size}
         bgColor={bgColor}
         fgColor={fgColor}
-        includeMargin={includeMargin}
         level="H"
       />
     </div>
@@ -57,11 +55,11 @@ export function PaymentQRCode({
       <QRCode value={paymentUrl} size={220} className="shadow-lg" />
       {amount && currency && (
         <div className="text-center">
-          <p className="text-2xl font-serif font-semibold">
+          <p className="text-2xl font-serif font-semibold" style={{ color: "#000" }}>
             {currency} {amount}
           </p>
           {reference && (
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm mt-1" style={{ color: "#666" }}>
               Ref: {reference}
             </p>
           )}

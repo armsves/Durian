@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import { useTheme } from "next-themes";
-import { Menu, Moon, Sun, LogOut, User, Store } from "lucide-react";
+import { Menu, Moon, Sun, LogOut, User, Store, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,7 +26,7 @@ const navigation = [
 
 export function Header() {
   const pathname = usePathname();
-  const { authenticated, login, logout, user } = usePrivy();
+  const { authenticated, logout, user } = usePrivy();
   const { theme, setTheme } = useTheme();
   const { userRole } = useAppStore();
 
@@ -120,6 +120,15 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                   )}
+                  {/* Admin link for admin users */}
+                  {user?.email?.address === "armsves@gmail.com" && (
+                    <DropdownMenuItem asChild className="text-[#C5A35E] hover:bg-[#C5A35E]/10">
+                      <Link href="/admin">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator className="bg-[#A8C2B9]/30" />
                   <DropdownMenuItem onClick={logout} className="text-[#1A1C1A] hover:bg-[#A8C2B9]/20">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -130,10 +139,10 @@ export function Header() {
             ) : (
               <Button
                 variant="outline"
-                onClick={login}
                 className="rounded-full border-[#2D3A2D] text-[#2D3A2D] hover:bg-[#2D3A2D] hover:text-white"
+                asChild
               >
-                Login
+                <Link href="/login">Login</Link>
               </Button>
             )}
 

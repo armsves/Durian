@@ -4,23 +4,23 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A35E] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25",
+          "bg-[#2D3A2D] text-white hover:bg-[#3d473d] shadow-lg shadow-[#2D3A2D]/25",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-red-500 text-white hover:bg-red-600",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-[#A8C2B9] bg-transparent text-[#000] hover:bg-[#A8C2B9]/10",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        gold: "bg-gold-500 text-white hover:bg-gold-600 shadow-lg shadow-gold-500/25",
-        sage: "bg-sage-700 text-white hover:bg-sage-800",
-        glass: "bg-white/20 backdrop-blur-lg border border-white/30 hover:bg-white/30",
+          "bg-[#A8C2B9] text-[#000] hover:bg-[#A8C2B9]/80",
+        ghost: "text-[#000] hover:bg-[#A8C2B9]/20",
+        link: "text-[#2D3A2D] underline-offset-4 hover:underline",
+        gold: "bg-[#C5A35E] text-white hover:bg-[#a8864a] shadow-lg shadow-[#C5A35E]/25",
+        sage: "bg-[#5C6B5C] text-white hover:bg-[#495649]",
+        glass: "bg-white/20 backdrop-blur-lg border border-white/30 text-white hover:bg-white/30",
       },
       size: {
         default: "h-10 px-4 py-2",

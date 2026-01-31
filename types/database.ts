@@ -1,0 +1,305 @@
+export type Database = {
+  public: {
+    Tables: {
+      businesses: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          name: string;
+          slug: string | null;
+          description: string | null;
+          category: string;
+          image_url: string | null;
+          logo_url: string | null;
+          address: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          phone: string | null;
+          email: string | null;
+          website: string | null;
+          price_range: number;
+          rating: number;
+          review_count: number;
+          wallet_address: string | null;
+          accepts_usdc: boolean;
+          accepts_revolut: boolean;
+          is_verified: boolean;
+          is_featured: boolean;
+          is_active: boolean;
+          owner_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          name: string;
+          slug?: string | null;
+          description?: string | null;
+          category: string;
+          image_url?: string | null;
+          logo_url?: string | null;
+          address?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          phone?: string | null;
+          email?: string | null;
+          website?: string | null;
+          price_range?: number;
+          rating?: number;
+          review_count?: number;
+          wallet_address?: string | null;
+          accepts_usdc?: boolean;
+          accepts_revolut?: boolean;
+          is_verified?: boolean;
+          is_featured?: boolean;
+          is_active?: boolean;
+          owner_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          name?: string;
+          slug?: string | null;
+          description?: string | null;
+          category?: string;
+          image_url?: string | null;
+          logo_url?: string | null;
+          address?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          phone?: string | null;
+          email?: string | null;
+          website?: string | null;
+          price_range?: number;
+          rating?: number;
+          review_count?: number;
+          wallet_address?: string | null;
+          accepts_usdc?: boolean;
+          accepts_revolut?: boolean;
+          is_verified?: boolean;
+          is_featured?: boolean;
+          is_active?: boolean;
+          owner_id?: string | null;
+        };
+      };
+      menu_items: {
+        Row: {
+          id: string;
+          created_at: string;
+          business_id: string;
+          name: string;
+          description: string | null;
+          price_thb: number;
+          category: string | null;
+          image_url: string | null;
+          is_available: boolean;
+          is_popular: boolean;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          business_id: string;
+          name: string;
+          description?: string | null;
+          price_thb: number;
+          category?: string | null;
+          image_url?: string | null;
+          is_available?: boolean;
+          is_popular?: boolean;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          business_id?: string;
+          name?: string;
+          description?: string | null;
+          price_thb?: number;
+          category?: string | null;
+          image_url?: string | null;
+          is_available?: boolean;
+          is_popular?: boolean;
+        };
+      };
+      payment_intents: {
+        Row: {
+          id: string;
+          created_at: string;
+          business_id: string | null;
+          amount_thb: number;
+          amount_usdc: number | null;
+          status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+          payment_method: 'usdc' | 'revolut' | null;
+          reference: string | null;
+          payer_wallet: string | null;
+          payer_email: string | null;
+          tx_hash: string | null;
+          revolut_link: string | null;
+          primus_proof: string | null;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          business_id?: string | null;
+          amount_thb: number;
+          amount_usdc?: number | null;
+          status?: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+          payment_method?: 'usdc' | 'revolut' | null;
+          reference?: string | null;
+          payer_wallet?: string | null;
+          payer_email?: string | null;
+          tx_hash?: string | null;
+          revolut_link?: string | null;
+          primus_proof?: string | null;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          business_id?: string | null;
+          amount_thb?: number;
+          amount_usdc?: number | null;
+          status?: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+          payment_method?: 'usdc' | 'revolut' | null;
+          reference?: string | null;
+          payer_wallet?: string | null;
+          payer_email?: string | null;
+          tx_hash?: string | null;
+          revolut_link?: string | null;
+          primus_proof?: string | null;
+          completed_at?: string | null;
+        };
+      };
+      transactions: {
+        Row: {
+          id: string;
+          created_at: string;
+          payment_intent_id: string | null;
+          business_id: string | null;
+          amount_thb: number;
+          amount_usdc: number;
+          payment_method: string;
+          tx_hash: string | null;
+          status: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          payment_intent_id?: string | null;
+          business_id?: string | null;
+          amount_thb: number;
+          amount_usdc: number;
+          payment_method: string;
+          tx_hash?: string | null;
+          status?: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          payment_intent_id?: string | null;
+          business_id?: string | null;
+          amount_thb?: number;
+          amount_usdc?: number;
+          payment_method?: string;
+          tx_hash?: string | null;
+          status?: string;
+        };
+      };
+      user_profiles: {
+        Row: {
+          id: string;
+          created_at: string;
+          privy_id: string | null;
+          email: string | null;
+          role: 'tourist' | 'business' | 'admin';
+          wallet_address: string | null;
+          business_id: string | null;
+          is_disabled: boolean;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          privy_id?: string | null;
+          email?: string | null;
+          role?: 'tourist' | 'business' | 'admin';
+          wallet_address?: string | null;
+          business_id?: string | null;
+          is_disabled?: boolean;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          privy_id?: string | null;
+          email?: string | null;
+          role?: 'tourist' | 'business' | 'admin';
+          wallet_address?: string | null;
+          business_id?: string | null;
+          is_disabled?: boolean;
+        };
+      };
+      offramp_requests: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          business_id: string;
+          amount_usdc: number;
+          amount_thb: number | null;
+          bank_name: string | null;
+          bank_account_number: string | null;
+          bank_account_name: string | null;
+          status: 'pending' | 'processing' | 'fulfilled' | 'rejected';
+          admin_notes: string | null;
+          fulfilled_by: string | null;
+          fulfilled_at: string | null;
+          tx_hash: string | null;
+          bank_transfer_ref: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          business_id: string;
+          amount_usdc: number;
+          amount_thb?: number | null;
+          bank_name?: string | null;
+          bank_account_number?: string | null;
+          bank_account_name?: string | null;
+          status?: 'pending' | 'processing' | 'fulfilled' | 'rejected';
+          admin_notes?: string | null;
+          fulfilled_by?: string | null;
+          fulfilled_at?: string | null;
+          tx_hash?: string | null;
+          bank_transfer_ref?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          business_id?: string;
+          amount_usdc?: number;
+          amount_thb?: number | null;
+          bank_name?: string | null;
+          bank_account_number?: string | null;
+          bank_account_name?: string | null;
+          status?: 'pending' | 'processing' | 'fulfilled' | 'rejected';
+          admin_notes?: string | null;
+          fulfilled_by?: string | null;
+          fulfilled_at?: string | null;
+          tx_hash?: string | null;
+          bank_transfer_ref?: string | null;
+        };
+      };
+    };
+  };
+};
+
+// Helper types
+export type Business = Database['public']['Tables']['businesses']['Row'];
+export type MenuItem = Database['public']['Tables']['menu_items']['Row'];
+export type PaymentIntent = Database['public']['Tables']['payment_intents']['Row'];
+export type Transaction = Database['public']['Tables']['transactions']['Row'];
+export type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
+export type OfframpRequest = Database['public']['Tables']['offramp_requests']['Row'];
