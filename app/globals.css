@@ -1,0 +1,365 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+@import "tailwindcss";
+
+/* ================================
+   DURIAN HARVEST PALETTE
+   ================================ */
+
+@theme {
+  /* Primary - Moss Green */
+  --color-moss: #2D3A2D;
+  --color-moss-50: #f4f5f4;
+  --color-moss-100: #e5e8e5;
+  --color-moss-200: #c8cfc8;
+  --color-moss-300: #a3afa3;
+  --color-moss-400: #7a8a7a;
+  --color-moss-500: #5c6b5c;
+  --color-moss-600: #495649;
+  --color-moss-700: #3d473d;
+  --color-moss-800: #2D3A2D;
+  --color-moss-900: #242e24;
+  --color-moss-950: #1a1f1a;
+
+  /* Accent - Harvest Gold */
+  --color-gold: #C5A35E;
+  --color-gold-50: #fdf9f0;
+  --color-gold-100: #f9f0db;
+  --color-gold-200: #f2ddb3;
+  --color-gold-300: #e9c582;
+  --color-gold-400: #d4af6a;
+  --color-gold-500: #C5A35E;
+  --color-gold-600: #a8864a;
+  --color-gold-700: #8a6b3c;
+  --color-gold-800: #6d5430;
+  --color-gold-900: #504025;
+  --color-gold-950: #2a2113;
+
+  /* Background - Durian Cream */
+  --color-cream: #FDFBF7;
+  --color-cream-50: #FDFBF7;
+  --color-cream-100: #faf6ee;
+  --color-cream-200: #f5efe0;
+  --color-cream-300: #ede4cc;
+  --color-cream-400: #e2d4b3;
+  --color-cream-500: #d4c199;
+  --color-cream-600: #c2aa7a;
+  --color-cream-700: #a8905f;
+  --color-cream-800: #8a754d;
+  --color-cream-900: #6d5c3d;
+
+  /* Gradient - Soft Leaf */
+  --color-leaf: #A8C2B9;
+  --color-leaf-50: #f4f8f6;
+  --color-leaf-100: #e6efeb;
+  --color-leaf-200: #cfe0d9;
+  --color-leaf-300: #A8C2B9;
+  --color-leaf-400: #8fb0a4;
+  --color-leaf-500: #739a8c;
+  --color-leaf-600: #5c7e71;
+  --color-leaf-700: #4c665c;
+  --color-leaf-800: #40544c;
+  --color-leaf-900: #374640;
+
+  /* Text - Deep Ebony */
+  --color-ebony: #1A1C1A;
+
+  /* Text Secondary - Muted Sage */
+  --color-sage: #5C6B5C;
+
+  /* Fonts */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Border radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+}
+
+/* CSS Variables for shadcn/ui compatibility */
+:root {
+  --background: 43 33% 98%;
+  --foreground: 120 7% 10%;
+  --card: 43 50% 99%;
+  --card-foreground: 120 7% 10%;
+  --popover: 43 50% 99%;
+  --popover-foreground: 120 7% 10%;
+  --primary: 120 12% 20%;
+  --primary-foreground: 43 33% 98%;
+  --secondary: 156 18% 72%;
+  --secondary-foreground: 120 12% 20%;
+  --muted: 43 20% 94%;
+  --muted-foreground: 120 8% 39%;
+  --accent: 41 48% 57%;
+  --accent-foreground: 120 12% 20%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 156 15% 85%;
+  --input: 156 15% 85%;
+  --ring: 41 48% 57%;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 120 12% 12%;
+  --foreground: 43 20% 95%;
+  --card: 120 12% 15%;
+  --card-foreground: 43 20% 95%;
+  --popover: 120 12% 15%;
+  --popover-foreground: 43 20% 95%;
+  --primary: 156 18% 72%;
+  --primary-foreground: 120 12% 12%;
+  --secondary: 120 12% 20%;
+  --secondary-foreground: 43 20% 90%;
+  --muted: 120 10% 20%;
+  --muted-foreground: 120 8% 60%;
+  --accent: 41 48% 57%;
+  --accent-foreground: 120 12% 12%;
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 120 10% 25%;
+  --input: 120 10% 25%;
+  --ring: 41 48% 57%;
+}
+
+/* Base styles */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: #FDFBF7;
+  color: #1A1C1A;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+.dark body {
+  background-color: #2D3A2D;
+  color: #FDFBF7;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  color: #1A1C1A;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4 {
+  color: #FDFBF7;
+}
+
+/* Durian gradient - Soft Leaf to Cream */
+.durian-gradient {
+  background: linear-gradient(135deg, #A8C2B9 0%, #c5d6cf 30%, #e0ebe5 60%, #FDFBF7 100%);
+}
+
+.durian-gradient-dark {
+  background: linear-gradient(135deg, #1a1f1a 0%, #2D3A2D 50%, #3d473d 100%);
+}
+
+/* Glass effect */
+.glass {
+  background-color: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(168, 194, 185, 0.3);
+}
+
+.glass-dark {
+  background-color: rgba(45, 58, 45, 0.95);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(168, 194, 185, 0.15);
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(to right, #2D3A2D, #C5A35E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Primary button - Harvest Gold */
+.btn-primary {
+  background-color: #C5A35E;
+  color: #2D3A2D;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(197, 163, 94, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #d4af6a;
+  box-shadow: 0 6px 16px rgba(197, 163, 94, 0.4);
+}
+
+/* Secondary button - Moss Green */
+.btn-secondary {
+  background-color: #2D3A2D;
+  color: #FDFBF7;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #3d473d;
+}
+
+/* Cards */
+.card-elevated {
+  background-color: #FDFBF7;
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(45, 58, 45, 0.06);
+  border: 1px solid rgba(168, 194, 185, 0.2);
+}
+
+/* Dark card style for payment gateway */
+.card-dark {
+  background-color: #2D3A2D;
+  color: #FDFBF7;
+  border-radius: 1.5rem;
+}
+
+/* Input fields */
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(168, 194, 185, 0.4);
+  background-color: #FDFBF7;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(197, 163, 94, 0.3);
+  border-color: #C5A35E;
+}
+
+/* Custom scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #A8C2B9;
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #5C6B5C;
+}
+
+/* Map container */
+.mapboxgl-map {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.mapboxgl-popup-content {
+  background-color: #FDFBF7 !important;
+  padding: 1rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 20px 25px -5px rgba(45, 58, 45, 0.1) !important;
+  border: 1px solid rgba(168, 194, 185, 0.3) !important;
+}
+
+.mapboxgl-popup-close-button {
+  color: #1A1C1A !important;
+  font-size: 1.25rem !important;
+  padding: 0.5rem !important;
+}
+
+.mapboxgl-popup-close-button:hover {
+  color: #C5A35E !important;
+}
+
+/* Animated background */
+.animated-bg {
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Status badges */
+.status-pending {
+  background-color: #f9f0db;
+  color: #8a6b3c;
+}
+
+.dark .status-pending {
+  background-color: rgba(197, 163, 94, 0.2);
+  color: #e9c582;
+}
+
+.status-paid {
+  background-color: #e6efeb;
+  color: #2D3A2D;
+}
+
+.dark .status-paid {
+  background-color: rgba(168, 194, 185, 0.2);
+  color: #A8C2B9;
+}
+
+.status-failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.dark .status-failed {
+  background-color: rgba(153, 27, 27, 0.2);
+  color: #f87171;
+}
+
+.status-approved {
+  background-color: #e6efeb;
+  color: #2D3A2D;
+}
+
+.dark .status-approved {
+  background-color: rgba(168, 194, 185, 0.3);
+  color: #A8C2B9;
+}
+
+/* Privy modal overrides */
+#privy-modal-content {
+  font-family: var(--font-sans) !important;
+}
+
+/* Animation utilities */
+.animate-in {
+  animation: animateIn 0.3s ease-out forwards;
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
