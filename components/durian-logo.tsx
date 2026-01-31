@@ -12,7 +12,7 @@ export function DurianLogo({ className }: DurianLogoProps) {
       viewBox="0 0 40 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("text-sage-700", className)}
+      className={cn(className)}
     >
       {/* Tree trunk */}
       <rect
@@ -21,8 +21,7 @@ export function DurianLogo({ className }: DurianLogoProps) {
         width="6"
         height="10"
         rx="1"
-        fill="currentColor"
-        className="text-durian-700"
+        fill="#5C6B5C"
       />
       {/* Tree crown - stylized durian shape */}
       <ellipse
@@ -30,8 +29,7 @@ export function DurianLogo({ className }: DurianLogoProps) {
         cy="16"
         rx="14"
         ry="14"
-        fill="currentColor"
-        className="text-sage-600"
+        fill="#2D3A2D"
       />
       {/* Inner highlight */}
       <ellipse
@@ -39,16 +37,14 @@ export function DurianLogo({ className }: DurianLogoProps) {
         cy="14"
         rx="10"
         ry="10"
-        fill="currentColor"
-        className="text-sage-500"
+        fill="#3d473d"
       />
       {/* Spiky texture lines */}
       <path
         d="M20 2 L20 6 M12 5 L14 8 M28 5 L26 8 M6 12 L10 14 M34 12 L30 14 M4 20 L8 20 M36 20 L32 20"
-        stroke="currentColor"
+        stroke="#2D3A2D"
         strokeWidth="2"
         strokeLinecap="round"
-        className="text-sage-700"
       />
     </svg>
   );

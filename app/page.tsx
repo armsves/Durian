@@ -12,13 +12,11 @@ import {
   BarChart3,
   Wallet,
   QrCode,
-  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { DurianLogo } from "@/components/durian-logo";
 
 const stats = [
   { label: "REGISTERED THAI ENTITIES", value: "250+" },
@@ -67,17 +65,21 @@ const howItWorks = [
 ];
 
 export default function LandingPage() {
-  const { login, authenticated } = usePrivy();
+  const { login } = usePrivy();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#FDFBF7]">
       <Header />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0 durian-gradient animated-bg opacity-60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+        {/* Background gradient */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(135deg, #A8C2B9 0%, #c5d6cf 30%, #dce8e2 60%, #FDFBF7 100%)"
+          }}
+        />
 
         <div className="container mx-auto px-4 pt-20 pb-32 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -87,18 +89,28 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 bg-gold-100 dark:bg-gold-900/30 text-gold-800 dark:text-gold-300 px-4 py-2 rounded-full text-sm mb-6">
-                <span className="w-2 h-2 bg-gold-500 rounded-full animate-pulse" />
+              <div className="inline-flex items-center gap-2 bg-[#C5A35E]/20 text-[#8a6b3c] px-4 py-2 rounded-full text-sm mb-6">
+                <span className="w-2 h-2 bg-[#C5A35E] rounded-full animate-pulse" />
                 LIVE IN THE KINGDOM OF THAILAND
               </div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif mb-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif mb-6 text-[#1A1C1A]">
                 Sovereign Assets,
                 <br />
-                <span className="text-gradient italic">Local Liquidity.</span>
+                <span 
+                  className="italic"
+                  style={{
+                    background: "linear-gradient(135deg, #C5A35E 0%, #8a6b3c 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Local Liquidity.
+                </span>
               </h1>
 
-              <p className="text-lg text-muted-foreground mb-8 max-w-lg">
+              <p className="text-lg text-[#5C6B5C] mb-8 max-w-lg">
                 Bridge the gap between global USDC payments and the Thai Baht
                 economy. Professional-grade infrastructure for modern Thai
                 enterprises.
@@ -106,19 +118,19 @@ export default function LandingPage() {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Shield className="w-5 h-5 text-sage-600" />
+                  <Shield className="w-5 h-5 text-[#2D3A2D]" />
                   <div>
-                    <p className="font-medium">Institutional Compliance</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-[#1A1C1A]">Institutional Compliance</p>
+                    <p className="text-sm text-[#5C6B5C]">
                       Regulated pathways for digital asset settlement.
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Banknote className="w-5 h-5 text-sage-600" />
+                  <Banknote className="w-5 h-5 text-[#2D3A2D]" />
                   <div>
-                    <p className="font-medium">Direct Baht Offramping</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-[#1A1C1A]">Direct Baht Offramping</p>
+                    <p className="text-sm text-[#5C6B5C]">
                       Settlements delivered via PromptPay in minutes.
                     </p>
                   </div>
@@ -133,21 +145,21 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex justify-center lg:justify-end"
             >
-              <Card className="w-full max-w-md glass shadow-2xl">
+              <Card className="w-full max-w-md bg-white/90 backdrop-blur-xl shadow-2xl border border-[#A8C2B9]/30">
                 <CardContent className="p-8">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                  <p className="text-xs uppercase tracking-wider text-[#5C6B5C] mb-2">
                     ENTERPRISE PORTAL
                   </p>
-                  <h2 className="text-2xl font-serif mb-2">
+                  <h2 className="text-2xl font-serif mb-2 text-[#1A1C1A]">
                     Welcome to the Directory
                   </h2>
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-[#5C6B5C] mb-6">
                     Connect your business identity to begin.
                   </p>
 
                   <Button
                     onClick={login}
-                    className="w-full btn-primary mb-4"
+                    className="w-full bg-[#C5A35E] hover:bg-[#a8864a] text-white font-semibold rounded-full h-12 mb-4"
                     size="lg"
                   >
                     <Wallet className="w-4 h-4 mr-2" />
@@ -157,25 +169,30 @@ export default function LandingPage() {
 
                   <div className="relative my-4">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border" />
+                      <div className="w-full border-t border-[#A8C2B9]/40" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">
+                      <span className="bg-white px-2 text-[#5C6B5C]">
                         Institutional Access
                       </span>
                     </div>
                   </div>
 
-                  <Button variant="outline" className="w-full" size="lg" asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-[#2D3A2D] text-[#2D3A2D] hover:bg-[#2D3A2D] hover:text-white rounded-full h-12" 
+                    size="lg" 
+                    asChild
+                  >
                     <Link href="/directory">
                       <QrCode className="w-4 h-4 mr-2" />
                       Browse Directory
                     </Link>
                   </Button>
 
-                  <p className="text-xs text-muted-foreground text-center mt-4">
+                  <p className="text-xs text-[#5C6B5C] text-center mt-4">
                     By proceeding, you agree to our{" "}
-                    <Link href="/legal" className="underline">
+                    <Link href="/legal" className="underline text-[#2D3A2D]">
                       Standard Terms
                     </Link>
                     .
@@ -188,7 +205,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-sage-900 text-white">
+      <section className="py-16 bg-[#2D3A2D] text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, i) => (
@@ -201,7 +218,7 @@ export default function LandingPage() {
                 className="text-center"
               >
                 <p className="text-3xl md:text-4xl font-serif mb-2">{stat.value}</p>
-                <p className="text-xs uppercase tracking-wider text-sage-300">
+                <p className="text-xs uppercase tracking-wider text-[#A8C2B9]">
                   {stat.label}
                 </p>
               </motion.div>
@@ -211,7 +228,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="solutions" className="py-24 bg-cream-50 dark:bg-background">
+      <section id="solutions" className="py-24 bg-[#FDFBF7]">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0 }}
@@ -219,11 +236,21 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-serif mb-4">
+            <h2 className="text-4xl md:text-5xl font-serif mb-4 text-[#1A1C1A]">
               Designed for the{" "}
-              <span className="italic text-gradient">Modern Merchant</span>
+              <span 
+                className="italic"
+                style={{
+                  background: "linear-gradient(135deg, #C5A35E 0%, #8a6b3c 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                Modern Merchant
+              </span>
             </h2>
-            <div className="w-16 h-1 bg-gold-500 mx-auto" />
+            <div className="w-16 h-1 bg-[#C5A35E] mx-auto" />
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -235,15 +262,15 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+                <Card className="h-full bg-white hover:shadow-lg transition-shadow duration-300 border-[#A8C2B9]/20">
                   <CardContent className="p-8">
-                    <div className="w-12 h-12 rounded-xl bg-sage-100 dark:bg-sage-900/30 flex items-center justify-center mb-6">
-                      <feature.icon className="w-6 h-6 text-sage-700 dark:text-sage-400" />
+                    <div className="w-12 h-12 rounded-xl bg-[#A8C2B9]/20 flex items-center justify-center mb-6">
+                      <feature.icon className="w-6 h-6 text-[#2D3A2D]" />
                     </div>
-                    <h3 className="text-xl font-serif font-semibold mb-3 italic">
+                    <h3 className="text-xl font-serif font-semibold mb-3 italic text-[#1A1C1A]">
                       {feature.title}
                     </h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
+                    <p className="text-[#5C6B5C]">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -253,7 +280,7 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-24">
+      <section className="py-24 bg-[#FDFBF7]">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0 }}
@@ -261,8 +288,8 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-serif mb-4">How It Works</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-serif mb-4 text-[#1A1C1A]">How It Works</h2>
+            <p className="text-[#5C6B5C] max-w-2xl mx-auto">
               Get started in minutes. Accept global payments and settle in Thai
               Baht.
             </p>
@@ -278,12 +305,12 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 className="relative"
               >
-                <div className="text-6xl font-serif text-sage-100 dark:text-sage-900 font-bold absolute -top-6 -left-2">
+                <div className="text-6xl font-serif text-[#A8C2B9]/40 font-bold absolute -top-6 -left-2">
                   {item.step}
                 </div>
                 <div className="relative pt-8 pl-4">
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
+                  <h3 className="text-xl font-semibold mb-2 text-[#1A1C1A]">{item.title}</h3>
+                  <p className="text-[#5C6B5C]">{item.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -292,7 +319,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-sage-700 text-white relative overflow-hidden">
+      <section className="py-24 bg-[#2D3A2D] text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div
             className="absolute inset-0"
@@ -310,21 +337,21 @@ export default function LandingPage() {
             <h2 className="text-4xl md:text-5xl font-serif mb-4 italic">
               Cultivate your business growth.
             </h2>
-            <p className="text-sage-200 mb-8 max-w-xl mx-auto">
+            <p className="text-[#A8C2B9] mb-8 max-w-xl mx-auto">
               Join the elite network of Thai businesses operating on the global
               stage. Secure, organic, and powerful.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 onClick={login}
-                className="bg-gold-500 hover:bg-gold-600 text-white"
+                className="bg-[#C5A35E] hover:bg-[#a8864a] text-white font-semibold rounded-full px-8"
                 size="lg"
               >
                 GET ONBOARDED
               </Button>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white/10"
+                className="border-white text-white hover:bg-white/10 rounded-full px-8"
                 size="lg"
                 asChild
               >
