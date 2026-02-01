@@ -52,7 +52,20 @@ CREATE TABLE IF NOT EXISTS businesses (
   is_active BOOLEAN DEFAULT true,
   
   -- Owner
-  owner_id UUID
+  owner_id UUID,
+  owner_email VARCHAR(255),
+  owner_wallet VARCHAR(42),
+  
+  -- Banking details for offramp
+  bank_name VARCHAR(100),
+  bank_account_name VARCHAR(255),
+  bank_account_number VARCHAR(50),
+  promptpay_id VARCHAR(50),
+  
+  -- KYC documents
+  kyc_status VARCHAR(20) DEFAULT 'pending' CHECK (kyc_status IN ('pending', 'submitted', 'approved', 'rejected')),
+  kyc_business_cert_url TEXT,
+  kyc_owner_id_url TEXT
 );
 
 -- Menu items table

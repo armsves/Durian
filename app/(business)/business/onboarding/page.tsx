@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import {
@@ -13,6 +13,7 @@ import {
   Banknote,
   Check,
   Upload,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -50,14 +51,48 @@ interface MenuItem {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user } = usePrivy();
+  const { user, ready } = usePrivy();
   const { onboardingStep, setOnboardingStep } = useAppStore();
   const [currentStep, setCurrentStep] = useState(onboardingStep);
+  const [checkingBusiness, setCheckingBusiness] = useState(true);
+
+  // Check if user already has a business - redirect to dashboard if so
+  useEffect(() => {
+    async function checkExistingBusiness() {
+      const userEmail = user?.email?.address || user?.google?.email;
+      
+      if (!ready) return;
+      
+      if (!userEmail) {
+        setCheckingBusiness(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/business?owner_email=${encodeURIComponent(userEmail)}`);
+        const data = await res.json();
+        
+        if (data.business) {
+          // User already has a business, redirect to dashboard
+          router.replace("/business/dashboard");
+          return;
+        }
+      } catch (err) {
+        console.error("Error checking for existing business:", err);
+      }
+      
+      setCheckingBusiness(false);
+    }
+
+    checkExistingBusiness();
+  }, [user, ready, router]);
 
   // Form state
   const [businessName, setBusinessName] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [phone, setPhone] = useState("");
+  const [website, setWebsite] = useState("");
   const [location, setLocation] = useState<{ lat: number; lng: number } | undefined>();
   const [address, setAddress] = useState("");
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
@@ -68,17 +103,75 @@ export default function OnboardingPage() {
   const [accountName, setAccountName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [promptPayId, setPromptPayId] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const progress = (currentStep / steps.length) * 100;
 
-  const nextStep = () => {
+  // Get user email and wallet
+  const userEmail = user?.email?.address || user?.google?.email || "";
+  const userWallet = user?.wallet?.address || "";
+
+  const saveBusinessToDatabase = async () => {
+    setSaving(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: businessName,
+          category,
+          description,
+          logo_url: logoUrl,
+          address,
+          latitude: location?.lat,
+          longitude: location?.lng,
+          phone,
+          website,
+          owner_email: userEmail,
+          owner_wallet: userWallet,
+          wallet_address: walletAddress || userWallet,
+          bank_name: bankName,
+          bank_account_name: accountName,
+          bank_account_number: accountNumber,
+          promptpay_id: promptPayId,
+          accepts_usdc: true,
+          accepts_durianbank: true,
+          menu_items: menuItems.filter(item => item.name && item.price),
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || result.error) {
+        setError(result.error || "Failed to create business");
+        setSaving(false);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error("Error saving business:", err);
+      setError("Failed to create business. Please try again.");
+      setSaving(false);
+      return false;
+    }
+  };
+
+  const nextStep = async () => {
     if (currentStep < steps.length) {
       const next = currentStep + 1;
       setCurrentStep(next);
       setOnboardingStep(next);
     } else {
-      // Complete onboarding
-      router.push("/business/dashboard");
+      // Complete onboarding - save to database
+      const success = await saveBusinessToDatabase();
+      if (success) {
+        router.push("/business/dashboard");
+      }
     }
   };
 
@@ -105,6 +198,18 @@ export default function OnboardingPage() {
       case 1:
         return (
           <div className="space-y-6">
+            {/* Show linked email */}
+            <div className="bg-gold-50 dark:bg-gold-900/20 p-4 rounded-xl">
+              <p className="text-sm text-muted-foreground">
+                This business will be linked to: <strong>{userEmail || "No email found"}</strong>
+              </p>
+              {userWallet && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Wallet: <code className="text-xs">{userWallet.slice(0, 6)}...{userWallet.slice(-4)}</code>
+                </p>
+              )}
+            </div>
+
             <div>
               <Label htmlFor="name">Business Name *</Label>
               <Input
@@ -142,6 +247,29 @@ export default function OnboardingPage() {
                 className="mt-1"
                 rows={4}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  placeholder="08x-xxx-xxxx"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  placeholder="https://..."
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
             </div>
 
             <div>
@@ -281,16 +409,38 @@ export default function OnboardingPage() {
       case 5:
         return (
           <div className="space-y-6">
-            <div className="bg-gold-50 dark:bg-gold-900/20 p-4 rounded-xl">
-              <h3 className="font-medium mb-2">Thai Baht Settlement</h3>
+            {/* Crypto Wallet */}
+            <div className="bg-sage-50 dark:bg-sage-900/20 p-4 rounded-xl">
+              <h3 className="font-medium mb-2">Crypto Wallet (USDC)</h3>
               <p className="text-sm text-muted-foreground">
-                We&apos;ll settle your crypto payments to this bank account via
-                PromptPay.
+                Enter the wallet address where you&apos;ll receive USDC payments.
               </p>
             </div>
 
             <div>
-              <Label htmlFor="bankName">Bank Name *</Label>
+              <Label htmlFor="walletAddress">Wallet Address (Base Network)</Label>
+              <Input
+                id="walletAddress"
+                placeholder="0x..."
+                value={walletAddress}
+                onChange={(e) => setWalletAddress(e.target.value)}
+                className="mt-1 font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {userWallet ? `Leave empty to use your connected wallet: ${userWallet.slice(0, 10)}...` : "Enter your EVM wallet address"}
+              </p>
+            </div>
+
+            {/* Bank Account */}
+            <div className="bg-gold-50 dark:bg-gold-900/20 p-4 rounded-xl">
+              <h3 className="font-medium mb-2">Thai Baht Settlement (Optional)</h3>
+              <p className="text-sm text-muted-foreground">
+                For offramp - we&apos;ll settle your crypto to this bank account.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="bankName">Bank Name</Label>
               <Select value={bankName} onValueChange={setBankName}>
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select your bank" />
@@ -306,7 +456,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <Label htmlFor="accountName">Account Holder Name *</Label>
+              <Label htmlFor="accountName">Account Holder Name</Label>
               <Input
                 id="accountName"
                 placeholder="As shown on bank account"
@@ -317,7 +467,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <Label htmlFor="accountNumber">Account Number *</Label>
+              <Label htmlFor="accountNumber">Account Number</Label>
               <Input
                 id="accountNumber"
                 placeholder="10-digit account number"
@@ -340,6 +490,12 @@ export default function OnboardingPage() {
                 For faster settlements
               </p>
             </div>
+
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl text-red-600 dark:text-red-400 text-sm">
+                {error}
+              </div>
+            )}
           </div>
         );
 
@@ -347,6 +503,18 @@ export default function OnboardingPage() {
         return null;
     }
   };
+
+  // Show loading while checking for existing business
+  if (checkingBusiness) {
+    return (
+      <div className="min-h-screen bg-cream-50 dark:bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: "#C5A35E" }} />
+          <p className="text-muted-foreground">Checking account...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-cream-50 dark:bg-background">
@@ -422,14 +590,23 @@ export default function OnboardingPage() {
           <Button
             variant="outline"
             onClick={prevStep}
-            disabled={currentStep === 1}
+            disabled={currentStep === 1 || saving}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <Button onClick={nextStep} variant="gold">
-            {currentStep === steps.length ? "Complete Setup" : "Continue"}
-            <ArrowRight className="w-4 h-4 ml-2" />
+          <Button onClick={nextStep} variant="gold" disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Creating Business...
+              </>
+            ) : (
+              <>
+                {currentStep === steps.length ? "Complete Setup" : "Continue"}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
           </Button>
         </div>
       </div>

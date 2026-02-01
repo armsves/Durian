@@ -28,6 +28,15 @@ export type Database = {
           is_featured: boolean;
           is_active: boolean;
           owner_id: string | null;
+          owner_email: string | null;
+          owner_wallet: string | null;
+          bank_name: string | null;
+          bank_account_name: string | null;
+          bank_account_number: string | null;
+          promptpay_id: string | null;
+          kyc_status: 'pending' | 'submitted' | 'approved' | 'rejected';
+          kyc_business_cert_url: string | null;
+          kyc_owner_id_url: string | null;
         };
         Insert: {
           id?: string;
@@ -55,6 +64,15 @@ export type Database = {
           is_featured?: boolean;
           is_active?: boolean;
           owner_id?: string | null;
+          owner_email?: string | null;
+          owner_wallet?: string | null;
+          bank_name?: string | null;
+          bank_account_name?: string | null;
+          bank_account_number?: string | null;
+          promptpay_id?: string | null;
+          kyc_status?: 'pending' | 'submitted' | 'approved' | 'rejected';
+          kyc_business_cert_url?: string | null;
+          kyc_owner_id_url?: string | null;
         };
         Update: {
           id?: string;
@@ -82,6 +100,15 @@ export type Database = {
           is_featured?: boolean;
           is_active?: boolean;
           owner_id?: string | null;
+          owner_email?: string | null;
+          owner_wallet?: string | null;
+          bank_name?: string | null;
+          bank_account_name?: string | null;
+          bank_account_number?: string | null;
+          promptpay_id?: string | null;
+          kyc_status?: 'pending' | 'submitted' | 'approved' | 'rejected';
+          kyc_business_cert_url?: string | null;
+          kyc_owner_id_url?: string | null;
         };
       };
       menu_items: {
