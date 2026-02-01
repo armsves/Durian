@@ -279,7 +279,7 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
               </div>
               <h1 
                 className="text-3xl md:text-4xl font-serif font-bold mb-2"
-                style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 8px rgba(0,0,0,0.5)" }}
+                style={{ textShadow: "0 0 8px rgba(255,255,255,0.9), 0 0 16px rgba(255,255,255,0.7), 0 2px 4px rgba(255,255,255,0.5)" }}
               >
                 {business.name}
               </h1>
@@ -403,12 +403,12 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Payment Card */}
-              <Card style={{ backgroundColor: "#2D3A2D", color: "white" }}>
+              <Card style={{ backgroundColor: "#4a7c59", color: "white" }}>
                 <CardHeader>
-                  <CardTitle className="text-white">Pay with Crypto</CardTitle>
+                  <CardTitle className="text-white" style={{ textShadow: "0 0 8px rgba(255,255,255,1), 0 0 12px rgba(255,255,255,0.8)" }}>Pay with Crypto</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-sm opacity-80">
+                  <p className="text-sm opacity-90">
                     Pay instantly with USDC or verify your DurianBank payment.
                   </p>
 
@@ -416,7 +416,7 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                     {business.accepts_usdc && (
                       <Badge 
                         variant="outline" 
-                        className="border-white/30 text-white"
+                        className="border-white/50 text-white"
                       >
                         <Wallet className="w-3 h-3 mr-1" />
                         USDC
@@ -425,7 +425,7 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                     {business.accepts_durianbank && (
                       <Badge 
                         variant="outline" 
-                        className="border-white/30 text-white"
+                        className="border-white/50 text-white"
                       >
                         <CreditCard className="w-3 h-3 mr-1" />
                         DurianBank
@@ -436,8 +436,12 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                   <Dialog open={paymentDialogOpen} onOpenChange={handleDialogChange}>
                     <DialogTrigger asChild>
                       <Button 
-                        className="w-full"
-                        style={{ backgroundColor: "#C5A35E", color: "white" }}
+                        className="w-full font-semibold"
+                        style={{ 
+                          backgroundColor: "#C5A35E", 
+                          color: "#1a1a1a", 
+                          textShadow: "0 0 8px rgba(255,255,255,1), 0 0 12px rgba(255,255,255,0.8)" 
+                        }}
                       >
                         <QrCode className="w-4 h-4 mr-2" />
                         Create Payment

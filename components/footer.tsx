@@ -77,7 +77,7 @@ export function Footer() {
 
         <div className="border-t border-[#A8C2B9]/30 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-[#5C6B5C]">
-            © 2024 DURIAN PAY (THAILAND) LTD. ALL RIGHTS RESERVED.
+            © 2026 DURIAN PAY (THAILAND) LTD. ALL RIGHTS RESERVED.
           </p>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
