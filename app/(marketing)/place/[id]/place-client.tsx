@@ -243,7 +243,7 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
           {/* Back button */}
           <div className="absolute top-20 left-4">
@@ -277,7 +277,10 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                   </Badge>
                 )}
               </div>
-              <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
+              <h1 
+                className="text-3xl md:text-4xl font-serif font-bold mb-2"
+                style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 8px rgba(0,0,0,0.5)" }}
+              >
                 {business.name}
               </h1>
               <div className="flex items-center gap-4">
