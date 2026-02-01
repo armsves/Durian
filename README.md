@@ -8,7 +8,7 @@
 
 - **Privy Authentication** - Email login with auto-generated embedded wallets
 - **USDC Payments** - Accept stablecoin payments on Base Sepolia
-- **Primus zkTLS Verification** - Cryptographically verify Revolut payment data
+- **Primus zkTLS Verification** - Cryptographically verify DurianBank payment data
 - **Business Directory** - Mapbox-powered discovery of crypto-friendly businesses
 - **Thai Baht Settlement** - Offramp USDC to local bank accounts via PromptPay
 - **Beautiful UI** - Premium design with dark mode support
@@ -94,14 +94,15 @@ durian/
 ## Payment Flow
 
 1. **Generate QR** - Business creates payment intent with amount
-2. **Select Method** - Customer chooses USDC or Revolut
+2. **Select Method** - Customer chooses USDC or DurianBank
 3. **Verify** - Primus zkTLS verifies payment data
 4. **Settle** - USDC received, business can offramp to THB
 
 ## API Endpoints
 
 - `POST /api/primus/verify` - Verify payment with zkTLS
-- `POST /api/revolut/create-link` - Generate Revolut payment link
+- `POST /api/durianbank/create-link` - Generate DurianBank payment link
+- `POST /api/payment/complete` - Mark payment as completed (webhook)
 
 ## Environment Variables
 
@@ -125,9 +126,9 @@ NEXT_PUBLIC_USDC_ADDRESS=0x036CbD53842c5426634e7929541eC2318f3dCF7e
 NEXT_PUBLIC_CHAIN_ID=84532
 NEXT_PUBLIC_PLATFORM_WALLET=
 
-# Revolut (optional)
-REVOLUT_MERCHANT_ID=
-REVOLUT_SECRET=
+# DurianBank (optional)
+DURIANBANK_MERCHANT_ID=
+DURIANBANK_SECRET=
 ```
 
 ## Deployment
@@ -157,7 +158,7 @@ CMD ["npm", "start"]
 
 1. **Tourist Flow**: Browse directory → Select business → Pay with USDC
 2. **Merchant Flow**: Register → Complete onboarding → Generate QR → Receive payment
-3. **zkTLS Demo**: Pay via Revolut → Primus verifies → Proof displayed
+3. **zkTLS Demo**: Pay via DurianBank → Primus verifies → Proof displayed
 
 ## Contributing
 

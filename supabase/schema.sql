@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS businesses (
   -- Crypto
   wallet_address VARCHAR(42),
   accepts_usdc BOOLEAN DEFAULT true,
-  accepts_revolut BOOLEAN DEFAULT true,
+  accepts_durianbank BOOLEAN DEFAULT true,
   
   -- Status
   is_verified BOOLEAN DEFAULT false,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS payment_intents (
   amount_usdc DECIMAL(18, 6),
   
   status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
-  payment_method VARCHAR(20) CHECK (payment_method IN ('usdc', 'revolut')),
+  payment_method VARCHAR(20) CHECK (payment_method IN ('usdc', 'durianbank')),
   
   reference VARCHAR(50) UNIQUE,
   
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS payment_intents (
   
   -- Transaction details
   tx_hash VARCHAR(66),
-  revolut_link TEXT,
+  durianbank_link TEXT,
   primus_proof TEXT,
   
   completed_at TIMESTAMP WITH TIME ZONE

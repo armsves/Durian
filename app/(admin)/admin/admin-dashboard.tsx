@@ -755,6 +755,7 @@ export function AdminDashboard({
                           <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: "#666" }}>Method</th>
                           <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: "#666" }}>Status</th>
                           <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: "#666" }}>Created</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium" style={{ color: "#666" }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -768,6 +769,11 @@ export function AdminDashboard({
                               <code className="text-sm" style={{ color: "#000" }}>
                                 {payment.reference || shortenAddress(payment.id, 4)}
                               </code>
+                              {payment.tx_hash && (
+                                <p className="text-xs mt-1" style={{ color: "#666" }}>
+                                  Tx: {shortenAddress(payment.tx_hash, 4)}
+                                </p>
+                              )}
                             </td>
                             <td className="py-3 px-4">
                               <div>
@@ -808,6 +814,42 @@ export function AdminDashboard({
                               <span className="text-sm" style={{ color: "#666" }}>
                                 {formatDate(payment.created_at)}
                               </span>
+                            </td>
+                            <td className="py-3 px-4">
+                              {payment.status === "pending" && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={async () => {
+                                    setLoading(payment.id);
+                                    try {
+                                      const res = await fetch(`/api/payment/${payment.id}`, {
+                                        method: "PATCH",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ status: "completed" }),
+                                      });
+                                      if (res.ok) {
+                                        // Refresh the page to show updated data
+                                        window.location.reload();
+                                      }
+                                    } catch (err) {
+                                      console.error("Failed to update payment:", err);
+                                    }
+                                    setLoading(null);
+                                  }}
+                                  disabled={loading === payment.id}
+                                  style={{ color: "#16a34a" }}
+                                >
+                                  {loading === payment.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <CheckCircle className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              )}
+                              {payment.status === "completed" && (
+                                <span className="text-xs" style={{ color: "#16a34a" }}>✓</span>
+                              )}
                             </td>
                           </tr>
                         ))}

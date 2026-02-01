@@ -19,6 +19,9 @@ import {
   Copy,
   Check,
   ArrowRight,
+  Loader2,
+  CheckCircle2,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,6 +41,7 @@ import { Footer } from "@/components/footer";
 import { MapboxMap } from "@/components/mapbox-map";
 import { QRCode } from "@/components/qr-code";
 import { CATEGORY_LABELS, formatTHB, thbToUsdc, generateReference, shortenAddress } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
 import type { Business, MenuItem } from "@/types/database";
 
 interface PlaceClientProps {
@@ -49,11 +53,17 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
   const router = useRouter();
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
-  const [paymentStep, setPaymentStep] = useState<"amount" | "qr">("amount");
-  const [paymentMethod, setPaymentMethod] = useState<"usdc" | "revolut">("usdc");
+  const [paymentStep, setPaymentStep] = useState<"amount" | "qr" | "success">("amount");
+  const [paymentMethod, setPaymentMethod] = useState<"usdc" | "durianbank" | null>(null);
   const [copied, setCopied] = useState(false);
-  const [reference] = useState(generateReference());
+  const [reference, setReference] = useState(generateReference());
   const [liveRate, setLiveRate] = useState<{ thbPerUsdc: number; formatted: string } | null>(null);
+  
+  // Payment intent tracking
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<"pending" | "completed" | "failed">("pending");
+  const [creatingPayment, setCreatingPayment] = useState(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   const categoryLabel = CATEGORY_LABELS[business.category as keyof typeof CATEGORY_LABELS] || business.category;
 
@@ -71,6 +81,82 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
         .catch(err => console.error("Failed to fetch rate:", err));
     }
   }, [paymentDialogOpen]);
+
+  // Poll for payment status every 2 seconds when QR is shown
+  useEffect(() => {
+    if (!paymentIntentId || paymentStep !== "qr") return;
+
+    const supabase = createClient();
+    
+    const pollPayment = async () => {
+      const { data, error } = await supabase
+        .from("payment_intents")
+        .select("status, tx_hash")
+        .eq("id", paymentIntentId)
+        .single();
+
+      if (error) {
+        console.error("Failed to fetch payment status:", error);
+        return;
+      }
+
+      if (data.status === "completed") {
+        setPaymentStatus("completed");
+        setTxHash(data.tx_hash);
+        setPaymentStep("success");
+      } else if (data.status === "failed") {
+        setPaymentStatus("failed");
+      }
+    };
+
+    // Poll immediately and then every 2 seconds
+    pollPayment();
+    const interval = setInterval(pollPayment, 2000);
+
+    return () => clearInterval(interval);
+  }, [paymentIntentId, paymentStep]);
+
+  // Create payment intent and generate QR
+  const handleGenerateQR = async () => {
+    if (!paymentAmount || parseFloat(paymentAmount) <= 0) return;
+    if (!paymentMethod) return;
+    
+    setCreatingPayment(true);
+    const newReference = generateReference();
+    setReference(newReference);
+    
+    try {
+      const res = await fetch("/api/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          business_id: business.id,
+          amount_thb: parseFloat(paymentAmount),
+          amount_usdc: usdcAmount,
+          reference: newReference,
+          payment_method: paymentMethod,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || result.error) {
+        console.error("Failed to create payment intent:", result.error);
+        alert("Failed to create payment. Please try again.");
+        setCreatingPayment(false);
+        return;
+      }
+
+      setPaymentIntentId(result.payment.id);
+      setPaymentStatus("pending");
+      setPaymentStep("qr");
+    } catch (err) {
+      console.error("Error creating payment:", err);
+      alert("Failed to create payment. Please try again.");
+    }
+    
+    setCreatingPayment(false);
+  };
 
   const markers = business.latitude && business.longitude
     ? [
@@ -104,8 +190,9 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
       const amountScientific = `${usdcAmount}e${USDC_DECIMALS}`;
       return `https://metamask.app.link/send/pay-${USDC_CONTRACT}@${BASE_SEPOLIA_CHAIN_ID}/transfer?address=${business.wallet_address}&uint256=${amountScientific}`;
     } else {
-      // Revolut payment link (mock)
-      return `https://revolut.me/pay/${business.slug || business.id}?amount=${paymentAmount}&currency=THB&ref=${reference}`;
+      // DurianBank payment link via Primus verification
+      const merchantName = encodeURIComponent(business.name);
+      return `https://durian-primus.vercel.app/?amount=${paymentAmount}&merchant=${merchantName}&ref=${reference}`;
     }
   };
 
@@ -120,6 +207,11 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
   const resetPaymentDialog = () => {
     setPaymentStep("amount");
     setPaymentAmount("");
+    setPaymentMethod(null);
+    setPaymentIntentId(null);
+    setPaymentStatus("pending");
+    setTxHash(null);
+    setReference(generateReference());
   };
 
   const handleDialogChange = (open: boolean) => {
@@ -314,7 +406,7 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm opacity-80">
-                    Pay instantly with USDC or verify your Revolut payment.
+                    Pay instantly with USDC or verify your DurianBank payment.
                   </p>
 
                   <div className="flex gap-2">
@@ -327,13 +419,13 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                         USDC
                       </Badge>
                     )}
-                    {business.accepts_revolut && (
+                    {business.accepts_durianbank && (
                       <Badge 
                         variant="outline" 
                         className="border-white/30 text-white"
                       >
                         <CreditCard className="w-3 h-3 mr-1" />
-                        Revolut
+                        DurianBank
                       </Badge>
                     )}
                   </div>
@@ -405,15 +497,15 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                                 <span className="text-xs" style={{ color: "#666" }}>Base Network</span>
                               </button>
                               <button
-                                onClick={() => setPaymentMethod("revolut")}
+                                onClick={() => setPaymentMethod("durianbank")}
                                 className="p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2"
                                 style={{
-                                  borderColor: paymentMethod === "revolut" ? "#C5A35E" : "rgba(168, 194, 185, 0.3)",
-                                  backgroundColor: paymentMethod === "revolut" ? "rgba(197, 163, 94, 0.1)" : "white",
+                                  borderColor: paymentMethod === "durianbank" ? "#C5A35E" : "rgba(168, 194, 185, 0.3)",
+                                  backgroundColor: paymentMethod === "durianbank" ? "rgba(197, 163, 94, 0.1)" : "white",
                                 }}
                               >
-                                <CreditCard className="w-6 h-6" style={{ color: paymentMethod === "revolut" ? "#C5A35E" : "#666" }} />
-                                <span className="font-medium" style={{ color: "#000" }}>Revolut</span>
+                                <CreditCard className="w-6 h-6" style={{ color: paymentMethod === "durianbank" ? "#C5A35E" : "#666" }} />
+                                <span className="font-medium" style={{ color: "#000" }}>DurianBank</span>
                                 <span className="text-xs" style={{ color: "#666" }}>Bank Transfer</span>
                               </button>
                             </div>
@@ -422,14 +514,23 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                           <Button
                             className="w-full h-12"
                             style={{ backgroundColor: "#C5A35E", color: "white" }}
-                            onClick={() => setPaymentStep("qr")}
-                            disabled={!paymentAmount || parseFloat(paymentAmount) <= 0}
+                            onClick={handleGenerateQR}
+                            disabled={!paymentAmount || parseFloat(paymentAmount) <= 0 || !paymentMethod || creatingPayment}
                           >
-                            Generate QR Code
-                            <ArrowRight className="w-4 h-4 ml-2" />
+                            {creatingPayment ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Creating Payment...
+                              </>
+                            ) : (
+                              <>
+                                Generate QR Code
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                              </>
+                            )}
                           </Button>
                         </div>
-                      ) : (
+                      ) : paymentStep === "qr" ? (
                         <div className="space-y-6 pt-4">
                           {/* QR Code */}
                           <div className="flex justify-center">
@@ -438,6 +539,17 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                               size={200}
                               className="shadow-lg"
                             />
+                          </div>
+
+                          {/* Waiting for Payment Indicator */}
+                          <div 
+                            className="flex items-center justify-center gap-2 p-3 rounded-lg"
+                            style={{ backgroundColor: "rgba(197, 163, 94, 0.1)" }}
+                          >
+                            <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#C5A35E" }} />
+                            <span className="text-sm font-medium" style={{ color: "#C5A35E" }}>
+                              Waiting for payment...
+                            </span>
                           </div>
 
                           {/* Payment Details */}
@@ -507,20 +619,20 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                             </div>
                           )}
 
-                          {paymentMethod === "revolut" && (
+                          {paymentMethod === "durianbank" && (
                             <div 
                               className="p-3 rounded-lg text-center"
                               style={{ backgroundColor: "rgba(197, 163, 94, 0.1)" }}
                             >
                               <p className="text-sm" style={{ color: "#666" }}>
-                                Scan QR with Revolut app or click below
+                                Scan QR with DurianBank app or click below
                               </p>
                               <Button
                                 variant="outline"
                                 className="mt-2"
                                 onClick={() => window.open(getPaymentQRValue(), "_blank")}
                               >
-                                Open Revolut Link
+                                Open DurianBank Link
                               </Button>
                             </div>
                           )}
@@ -533,6 +645,71 @@ export function PlaceClient({ business, menuItems }: PlaceClientProps) {
                           >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Change Amount
+                          </Button>
+                        </div>
+                      ) : (
+                        /* Success State */
+                        <div className="space-y-6 pt-4 text-center">
+                          <div 
+                            className="w-20 h-20 rounded-full mx-auto flex items-center justify-center"
+                            style={{ backgroundColor: "rgba(34, 197, 94, 0.1)" }}
+                          >
+                            <CheckCircle2 className="w-10 h-10" style={{ color: "#16a34a" }} />
+                          </div>
+
+                          <div>
+                            <h3 className="text-2xl font-serif font-bold" style={{ color: "#000" }}>
+                              Payment Received!
+                            </h3>
+                            <p className="text-sm mt-2" style={{ color: "#666" }}>
+                              Thank you for your payment
+                            </p>
+                          </div>
+
+                          <div 
+                            className="p-4 rounded-xl"
+                            style={{ backgroundColor: "rgba(34, 197, 94, 0.1)" }}
+                          >
+                            <p className="text-sm" style={{ color: "#666" }}>Amount Paid</p>
+                            <p className="text-2xl font-serif font-bold mt-1" style={{ color: "#16a34a" }}>
+                              {paymentMethod === "usdc" 
+                                ? `${usdcAmount.toFixed(2)} USDC`
+                                : formatTHB(parseFloat(paymentAmount))
+                              }
+                            </p>
+                            <p className="text-xs mt-2" style={{ color: "#666" }}>
+                              Ref: {reference}
+                            </p>
+                          </div>
+
+                          {txHash && (
+                            <div 
+                              className="p-3 rounded-lg"
+                              style={{ backgroundColor: "rgba(168, 194, 185, 0.1)" }}
+                            >
+                              <p className="text-xs mb-1" style={{ color: "#666" }}>Transaction Hash</p>
+                              <div className="flex items-center justify-center gap-2">
+                                <code className="text-xs" style={{ color: "#000" }}>
+                                  {shortenAddress(txHash, 8)}
+                                </code>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => window.open(`https://sepolia.basescan.org/tx/${txHash}`, "_blank")}
+                                  style={{ color: "#C5A35E" }}
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          <Button
+                            className="w-full"
+                            style={{ backgroundColor: "#2D3A2D", color: "white" }}
+                            onClick={() => handleDialogChange(false)}
+                          >
+                            Done
                           </Button>
                         </div>
                       )}

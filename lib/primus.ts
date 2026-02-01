@@ -1,5 +1,5 @@
 // Primus Labs zkTLS SDK integration
-// Used to verify payment data from external sources (Revolut, etc.)
+// Used to verify payment data from external sources (DurianBank, etc.)
 
 interface PrimusVerificationResult {
   valid: boolean;

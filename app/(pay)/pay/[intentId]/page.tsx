@@ -41,7 +41,7 @@ function PaymentContent() {
   const { wallets } = useWallets();
 
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"usdc" | "revolut">("usdc");
+  const [paymentMethod, setPaymentMethod] = useState<"usdc" | "durianbank">("usdc");
   const [paymentStatus, setPaymentStatus] = useState<"loading" | "pending" | "verifying" | "processing" | "success" | "error">("loading");
   const [verificationProof, setVerificationProof] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -169,8 +169,8 @@ function PaymentContent() {
     }
   };
 
-  // Handle Revolut payment with Primus verification
-  const handleRevolutPayment = async () => {
+  // Handle DurianBank payment with Primus verification
+  const handleDurianBankPayment = async () => {
     if (!paymentDetails) return;
 
     setPaymentStatus("verifying");
@@ -178,8 +178,8 @@ function PaymentContent() {
 
     try {
       // In production, this would call the Primus zkTLS API
-      // For now, show that Revolut integration requires API setup
-      setError("Revolut integration requires API configuration. Please use USDC payment.");
+      // For now, show that DurianBank integration requires API setup
+      setError("DurianBank integration requires API configuration. Please use USDC payment.");
       setPaymentStatus("pending");
     } catch (err) {
       console.error("Verification error:", err);
@@ -423,11 +423,11 @@ function PaymentContent() {
                         </button>
 
                         <button
-                          onClick={() => setPaymentMethod("revolut")}
+                          onClick={() => setPaymentMethod("durianbank")}
                           className={`w-full flex items-center justify-between p-4 rounded-xl transition-all`}
                           style={{
-                            backgroundColor: paymentMethod === "revolut" ? "#3d473d" : "rgba(61, 71, 61, 0.5)",
-                            border: paymentMethod === "revolut" ? "1px solid rgba(168, 194, 185, 0.5)" : "1px solid transparent"
+                            backgroundColor: paymentMethod === "durianbank" ? "#3d473d" : "rgba(61, 71, 61, 0.5)",
+                            border: paymentMethod === "durianbank" ? "1px solid rgba(168, 194, 185, 0.5)" : "1px solid transparent"
                           }}
                         >
                           <div className="flex items-center gap-3">
@@ -435,7 +435,7 @@ function PaymentContent() {
                               <CreditCard className="w-5 h-5" />
                             </div>
                             <div className="text-left">
-                              <p className="font-medium">Revolut Payment</p>
+                              <p className="font-medium">DurianBank Payment</p>
                               <p className="text-xs" style={{ color: "#A8C2B9" }}>
                                 Verified by Primus zkTLS
                               </p>
@@ -444,8 +444,8 @@ function PaymentContent() {
                           <div
                             className="w-5 h-5 rounded-full border-2"
                             style={{
-                              borderColor: paymentMethod === "revolut" ? "#C5A35E" : "rgba(168, 194, 185, 0.5)",
-                              backgroundColor: paymentMethod === "revolut" ? "#C5A35E" : "transparent"
+                              borderColor: paymentMethod === "durianbank" ? "#C5A35E" : "rgba(168, 194, 185, 0.5)",
+                              backgroundColor: paymentMethod === "durianbank" ? "#C5A35E" : "transparent"
                             }}
                           />
                         </button>
@@ -478,7 +478,7 @@ function PaymentContent() {
                       onClick={
                         paymentMethod === "usdc"
                           ? handleUSDCPayment
-                          : handleRevolutPayment
+                          : handleDurianBankPayment
                       }
                       className="w-full h-14 text-lg font-semibold rounded-full"
                       style={{ backgroundColor: "#C5A35E", color: "#1A1C1A" }}

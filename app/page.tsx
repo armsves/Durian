@@ -54,7 +54,7 @@ const howItWorks = [
   {
     step: "02",
     title: "Generate Payment QR",
-    description: "Create payment requests with QR codes for USDC or Revolut payments.",
+    description: "Create payment requests with QR codes for USDC or DurianBank payments.",
   },
   {
     step: "03",

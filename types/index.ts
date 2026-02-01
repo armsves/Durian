@@ -86,8 +86,8 @@ export interface PaymentIntent {
   exchange_rate: number;
   reference: string;
   status: PaymentStatus;
-  payment_method: "usdc" | "revolut" | "promptpay" | null;
-  revolut_link: string | null;
+  payment_method: "usdc" | "durianbank" | "promptpay" | null;
+  durianbank_link: string | null;
   usdc_tx_hash: string | null;
   verified_by_primus: boolean;
   payer_wallet: string | null;
